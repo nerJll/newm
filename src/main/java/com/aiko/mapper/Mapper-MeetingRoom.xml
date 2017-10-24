@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiko.dao.MeetingRoomDao">
+	<resultMap type="com.aiko.domain.MeetingRoom" id="MeetingRoomMap">
+		<result column="MEET_ROOM_ID" property="meetRoomId" jdbcType="INTEGER" />
+		<result column="MEET_ROOM_NAME" property="meetRoomName"
+			jdbcType="VARCHAR" />
+		<result column="MEET_ROOM_NUM" property="meetRoomNum" jdbcType="INTEGER" />
+		<result column="MEET_ROOM_STATE" property="meetRoomState"
+			jdbcType="INTEGER" />
+		<result column="IS_ROOM_PRO" property="isRoomPro" jdbcType="INTEGER" />
+		<result column="RES_ONE" property="resOne" jdbcType="VARCHAR" />
+		<result column="RES_TWO" property="resTow" jdbcType="VARCHAR" />
+		<result column="RES_THREE" property="resThree" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="selectAll">
+		SELECT
+		MEET_ROOM_ID,MEET_ROOM_NAME,MEET_ROOM_NUM,MEET_ROOM_STATE,IS_ROOM_PRO,RES_ONE,RES_TWO,RES_THREE
+		FROM
+		aiko_meetingroom
+	</sql>
+
+	<!-- 复杂查询 -->
+	<select id="findMeetingRoomList" resultMap="MeetingRoomMap"
+		parameterType="Map">
+		<include refid="selectAll" />
+		<where>
+			<if test="params.meetRoomId != null and params.meetRoomId != '' ">
+				AND MEET_ROOM_ID = #{params.meetRoomId}
+			</if>
+			<if test="params.type != null and params.type != '' ">
+				AND RES_TWO = #{params.type}
+			</if>
+			<if test="params.meetRoomName != null and params.meetRoomName != '' ">
+				<!-- 绑定参数防止sql注入 -->
+				<bind name="likeWord" value="'%' +params.meetRoomName+ '%'" />
+				AND MEET_ROOM_NAME LIKE #{likeWord}
+			</if>
+			<if test="params.meetRoomNum != null and params.meetRoomNum != '' ">
+				AND MEET_ROOM_NUM >= #{params.meetRoomNum}
+			</if>
+			<if test="params.isRoomPro != null">
+				AND IS_ROOM_PRO = #{params.isRoomPro}
+			</if>
+		</where>
+	</select>
+
+	<!-- 增加 -->
+	<insert id="addMeetingRoom" parameterType="MeetingRoom">
+		<selectKey resultType="Integer" order="AFTER" keyProperty="meetRoomId">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO aiko_meetingroom
+		(MEET_ROOM_ID,MEET_ROOM_NAME,MEET_ROOM_NUM,MEET_ROOM_STATE,IS_ROOM_PRO,RES_ONE,RES_TWO,RES_THREE)
+		VALUES
+		(#{meetRoomId},#{meetRoomName},#{meetRoomNum},#{meetRoomState},#{isRoomPro},#{resOne},#{resTow},#{resThree})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="updateMeetingRoom" parameterType="MeetingRoom">
+		UPDATE aiko_meetingroom
+		<set>
+			<if test="meetRoomName != null">
+				MEET_ROOM_NAME = #{meetRoomName},
+			</if>
+			<if test="meetRoomNum != null">
+				MEET_ROOM_NUM = #{meetRoomNum},
+			</if>
+			<if test="meetRoomState != null">
+				MEET_ROOM_STATE = #{meetRoomState},
+			</if>
+			<if test="isRoomPro != null">
+				IS_ROOM_PRO = #{isRoomPro},
+			</if>
+			<if test="resOne != null">
+				resOne = #{resOne},
+			</if>
+			<if test="resTow != null">
+				resTow = #{resTow},
+			</if>
+			<if test="resThree != null">
+				RES_THREE = #{resThree},
+			</if>
+		</set>
+		WHERE MEET_ROOM_ID = #{meetRoomId}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="deleteMeetingRoom" parameterType="Integer">
+		DELETE FROM
+		aiko_meetingroom WHERE MEET_ROOM_ID = #{meetRoomId}
+	</delete>
+
+</mapper>

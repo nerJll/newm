@@ -1,0 +1,35 @@
+/* 全局样式 */
+body
+{
+    background-image: url(../../images/body_bg.png);
+    background-color: #0063a0;
+}
+
+
+/* 错误页面 */
+body.error_page
+{
+    background-color: #00629f;
+    background-image: url(../../images/error.png);
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+body.error_power_page
+{
+    background-color: #00629f;
+    background-image: url(../../images/error_power.png);
+    background-position: center 40%;
+    background-repeat: no-repeat;
+}
+#error
+{
+    color: #FFF;
+}
+#error span,#error a
+{
+    color:Yellow;
+}
+#error a:hover
+{
+    color:#FFF;
+}

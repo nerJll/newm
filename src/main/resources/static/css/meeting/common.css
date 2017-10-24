@@ -1,0 +1,14 @@
+.tb table th, td {
+	text-align: center;
+}
+
+.ipt {
+	width: 200px;
+	height: 35px;
+	border-radius: 5px;
+}
+
+.footer {
+	text-align: center;
+	background: #F5FFFA;
+}

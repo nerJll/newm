@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiko.dao.MeetingDao">
+	<resultMap id="MeetingMap" type="com.aiko.domain.Meeting">
+		<result column="MEET_ID" property="meetId" jdbcType="INTEGER" />
+		<result column="APPLY_EMP_ID" property="applyEmpId" jdbcType="INTEGER" />
+		<result column="LAU_EMP_ID" property="lauEmpId" jdbcType="INTEGER" />
+		<result column="MEET_THEME" property="meetTheme" jdbcType="VARCHAR" />
+		<result column="MEET_EMP_NUM" property="meetEmpNum" jdbcType="INTEGER" />
+		<result column="STA_TIME" property="staTime" jdbcType="TIMESTAMP" />
+		<result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="IS_NEED_PRO" property="isNeedPro" jdbcType="INTEGER" />
+		<result column="MEET_ROOM_NAME" property="meetRoomName"
+			jdbcType="VARCHAR" />
+		<result column="MEET_TYPE" property="meetType" jdbcType="VARCHAR" />
+		<result column="MEET_EMP_NAME" property="meetEmpName" jdbcType="VARCHAR" />
+		<result column="MEET_APPLY_TIME" property="meetApplyTime"
+			jdbcType="TIMESTAMP" />
+		<result column="RES_ONE" property="resOne" jdbcType="VARCHAR" />
+		<result column="RES_TWO" property="resTow" jdbcType="VARCHAR" />
+		<result column="RES_THREE" property="resThree" jdbcType="VARCHAR" />
+		<result column="MEET_ROOM_ID" property="meetRoomId" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<sql id="meetingSortByTime">
+		ORDER BY MEET_APPLY_TIME DESC
+	</sql>
+	
+	<select id="findMeetingList" resultMap="MeetingMap"
+		parameterType="java.util.Map">
+		SELECT * FROM aiko_meetingone t
+		<where>
+			<if test="params.meetId!=null and params.meetId!='' ">
+				AND t.MEET_ID=#{params.meetId}
+			</if>
+			<!-- 按照会议状态查询 -->
+			<if test="params.resOne!=null and params.resOne!='' ">
+				AND t.RES_ONE=#{params.resOne}
+			</if>
+			<!-- 按照申请人工号查询 -->
+			<if test="params.applyEmpId!=null and params.applyEmpId!='' ">
+				AND t.APPLY_EMP_ID=#{params.applyEmpId} <include refid="meetingSortByTime" />
+			</if>
+			<if test="params.lauEmpId!=null and params.lauEmpId!='' ">
+				AND t.LAU_EMP_ID=#{params.lauEmpId}
+			</if>
+			<if test="params.staTime!=null and params.endTime!=null">
+				AND (#{params.staTime} BETWEEN t.STA_TIME AND t.END_TIME
+					OR #{params.endTime} BETWEEN t.STA_TIME AND t.END_TIME
+					OR t.STA_TIME BETWEEN #{params.staTime} AND #{params.endTime} 
+					OR t.END_TIME BETWEEN #{params.staTime} AND #{params.endTime}
+				 )
+			</if>
+			<if test="params.meetTheme!=null and params.meetTheme!='' ">
+				<bind name="like_name" value="'%' + params.meetTheme + '%'" />
+				AND t.MEET_THEME like #{like_name}
+			</if>
+		</where>
+	</select>
+
+	<insert id="addMeeting" parameterType="com.aiko.domain.Meeting">
+       <![CDATA[
+       INSERT INTO aiko_meetingone 
+       (
+			APPLY_EMP_ID,
+			LAU_EMP_ID,
+			MEET_THEME,
+			MEET_EMP_NUM,
+			STA_TIME,
+			END_TIME,
+			IS_NEED_PRO,
+			MEET_ROOM_NAME,
+			MEET_TYPE,
+			MEET_EMP_NAME,
+			MEET_APPLY_TIME,
+			RES_ONE,
+			RES_TWO,
+			RES_THREE,
+			MEET_ROOM_ID
+       )
+       VALUES
+       (
+           #{applyEmpId}, 
+           #{lauEmpId}, 
+           #{meetTheme}, 
+           #{meetEmpNum},
+		   #{staTime}, 
+		   #{endTime}, 
+		   #{isNeedPro}, 
+		   #{meetRoomName}, 
+		   #{meetType}, 
+		   #{meetEmpName},
+		   #{meetApplyTime}, 
+		   #{resOne}, 
+		   #{resTow}, 
+		   #{resThree},
+		   #{meetRoomId}
+       )
+       ]]>
+	</insert>
+
+	<update id="updateMeeting" parameterType="com.aiko.domain.Meeting">
+		UPDATE aiko_meetingone
+		<set>
+			<if test="applyEmpId != null">
+				APPLY_EMP_ID = #{applyEmpId},
+			</if>
+			<if test="lauEmpId != null">
+				LAU_EMP_ID=#{lauEmpId},
+			</if>
+			<if test="meetTheme != null">
+				MEET_THEME=#{meetTheme},
+			</if>
+			<if test="meetEmpNum != null">
+				MEET_EMP_NUM=#{meetEmpNum},
+			</if>
+			<if test="staTime != null">
+				STA_TIME=#{staTime},
+			</if>
+			<if test="endTime != null">
+				END_TIME=#{endTime},
+			</if>
+			<if test="isNeedPro != null">
+				IS_NEED_PRO=#{isNeedPro},
+			</if>
+			<if test="meetRoomName != null">
+				MEET_ROOM_NAME=#{meetRoomName},
+			</if>
+			<if test="meetType != null">
+				MEET_TYPE=#{meetType},
+			</if>
+			<if test="meetEmpName != null">
+				MEET_EMP_NAME=#{meetEmpName},
+			</if>
+			<if test="meetApplyTime != null">
+				MEET_APPLY_TIME=#{meetApplyTime},
+			</if>
+			<if test="resOne != null">
+				RES_ONE=#{resOne},
+			</if>
+			<if test="resTow != null">
+				RES_TWO=#{resTow},
+			</if>
+			<if test="resThree != null">
+				RES_THREE=#{resThree}
+			</if>
+			<if test="meetRoomId != null">
+				MEET_ROOM_ID=#{meetRoomId}
+			</if>
+		</set>
+		WHERE MEET_ID = #{meetId}
+
+	</update>
+
+	<delete id="deleteMeeting" parameterType="java.lang.Integer">
+		DELETE FROM
+		aiko_meetingone
+		WHERE MEET_ID=#{meetId}
+	</delete>
+</mapper>
